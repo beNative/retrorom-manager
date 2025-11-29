@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { GameEntry } from '../types';
 import { Image, Film, AlertCircle } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Tooltip } from './Tooltip';
 
 interface GameTableProps {
   games: GameEntry[];
@@ -81,18 +82,18 @@ export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelec
               </td>
               <td className="p-3">
                 <div className="flex justify-center gap-2">
-                  <span title={game.image ? `Path: ${game.image}` : "No Image"}>
+                  <Tooltip content={game.image ? `Path: ${game.image}` : "No Image"}>
                     <Image
                       size={16}
                       className={clsx(game.imageExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
                     />
-                  </span>
-                  <span title={game.video ? `Path: ${game.video}` : "No Video"}>
+                  </Tooltip>
+                  <Tooltip content={game.video ? `Path: ${game.video}` : "No Video"}>
                     <Film
                       size={16}
                       className={clsx(game.videoExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
                     />
-                  </span>
+                  </Tooltip>
                 </div>
               </td>
               <td className="p-3 text-center">

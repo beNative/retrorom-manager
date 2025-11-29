@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { System } from '../types';
 import { Gamepad2, AlertTriangle, CheckCircle2, Info, Settings, Copy, Cpu } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Tooltip } from './Tooltip';
 
 interface SidebarProps {
   systems: System[];
@@ -87,58 +88,66 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
       </div>
 
       <div className="p-2 border-t transition-colors duration-200 flex flex-col gap-1 border-gray-200 bg-gray-50 dark:border-retro-700 dark:bg-retro-900/30">
-        <button
-          onClick={onInfoClick}
-          className={clsx(
-            "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
-            "hover:bg-gray-200 dark:hover:bg-retro-700",
-            activeView === 'info'
-              ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
-              : "text-gray-600 dark:text-gray-400"
-          )}
-        >
-          <Info size={16} />
-          Information
-        </button>
-        <button
-          onClick={onDuplicatesClick}
-          className={clsx(
-            "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
-            "hover:bg-gray-200 dark:hover:bg-retro-700",
-            activeView === 'duplicates'
-              ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
-              : "text-gray-600 dark:text-gray-400"
-          )}
-        >
-          <Copy size={16} />
-          Duplicates
-        </button>
-        <button
-          onClick={onBiosClick}
-          className={clsx(
-            "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
-            "hover:bg-gray-200 dark:hover:bg-retro-700",
-            activeView === 'bios'
-              ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
-              : "text-gray-600 dark:text-gray-400"
-          )}
-        >
-          <Cpu size={16} />
-          BIOS
-        </button>
-        <button
-          onClick={onSettingsClick}
-          className={clsx(
-            "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
-            "hover:bg-gray-200 dark:hover:bg-retro-700",
-            activeView === 'settings'
-              ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
-              : "text-gray-600 dark:text-gray-400"
-          )}
-        >
-          <Settings size={16} />
-          Settings
-        </button>
+        <Tooltip content="Documentation" position="right">
+          <button
+            onClick={onInfoClick}
+            className={clsx(
+              "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
+              "hover:bg-gray-200 dark:hover:bg-retro-700",
+              activeView === 'info'
+                ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
+                : "text-gray-600 dark:text-gray-400"
+            )}
+          >
+            <Info size={16} />
+            Information
+          </button>
+        </Tooltip>
+        <Tooltip content="Find Duplicate ROMs" position="right">
+          <button
+            onClick={onDuplicatesClick}
+            className={clsx(
+              "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
+              "hover:bg-gray-200 dark:hover:bg-retro-700",
+              activeView === 'duplicates'
+                ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
+                : "text-gray-600 dark:text-gray-400"
+            )}
+          >
+            <Copy size={16} />
+            Duplicates
+          </button>
+        </Tooltip>
+        <Tooltip content="Check for Missing BIOS" position="right">
+          <button
+            onClick={onBiosClick}
+            className={clsx(
+              "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
+              "hover:bg-gray-200 dark:hover:bg-retro-700",
+              activeView === 'bios'
+                ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
+                : "text-gray-600 dark:text-gray-400"
+            )}
+          >
+            <Cpu size={16} />
+            BIOS
+          </button>
+        </Tooltip>
+        <Tooltip content="Application Settings" position="right">
+          <button
+            onClick={onSettingsClick}
+            className={clsx(
+              "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
+              "hover:bg-gray-200 dark:hover:bg-retro-700",
+              activeView === 'settings'
+                ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
+                : "text-gray-600 dark:text-gray-400"
+            )}
+          >
+            <Settings size={16} />
+            Settings
+          </button>
+        </Tooltip>
       </div>
     </div>
   );
