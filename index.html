@@ -1,55 +1,69 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RetroRom Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              retro: {
-                900: '#1a1b26',
-                800: '#24283b',
-                700: '#414868',
-                accent: '#7aa2f7',
-                success: '#9ece6a',
-                warning: '#e0af68',
-                error: '#f7768e'
-              }
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RetroRom Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              900: '#1a1b26',
+              800: '#24283b',
+              700: '#414868',
+              accent: '#7aa2f7',
+              success: '#9ece6a',
+              warning: '#e0af68',
+              error: '#f7768e'
             }
           }
         }
       }
-    </script>
-    <style>
-      body {
-        background-color: #1a1b26;
-        color: #c0caf5;
-      }
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #1a1b26; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #414868; 
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #565f89; 
-      }
-    </style>
+    }
+  </script>
+  <style>
+    body {
+      background-color: #1a1b26;
+      color: #c0caf5;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #1a1b26;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #414868;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #565f89;
+    }
+
+    .app-drag-region {
+      -webkit-app-region: drag;
+    }
+
+    .app-no-drag {
+      -webkit-app-region: no-drag;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.0",
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
     "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
     "url": "https://aistudiocdn.com/url@^0.11.4",
@@ -63,8 +77,10 @@
 }
 </script>
 </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>

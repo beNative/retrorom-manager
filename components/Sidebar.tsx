@@ -1,15 +1,44 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { System } from '../types';
-import { Gamepad2, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Gamepad2, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface SidebarProps {
   systems: System[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onInfoClick: () => void;
+  activeView: 'dashboard' | 'info';
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect, onInfoClick, activeView }) => {
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  useEffect(() => {
+    itemRefs.current = itemRefs.current.slice(0, systems.length);
+  }, [systems]);
+
+  const handleKeyDown = (e: React.KeyboardEvent, index: number, id: string) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIndex = (index + 1) % systems.length;
+      itemRefs.current[nextIndex]?.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = (index - 1 + systems.length) % systems.length;
+      itemRefs.current[prevIndex]?.focus();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      itemRefs.current[0]?.focus();
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      itemRefs.current[systems.length - 1]?.focus();
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onSelect(id);
+    }
+  };
+
   return (
     <div className="w-64 bg-retro-800 border-r border-retro-700 flex flex-col flex-shrink-0">
       <div className="p-4 border-b border-retro-700 bg-retro-900/50">
@@ -18,16 +47,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect 
         </h2>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {systems.map((sys) => {
+        {systems.map((sys, index) => {
           const hasIssues = sys.stats.romsWithoutEntry > 0 || sys.stats.entriesWithoutRom > 0;
-          
+
           return (
             <button
               key={sys.id}
+              ref={el => itemRefs.current[index] = el}
               onClick={() => onSelect(sys.id)}
+              onKeyDown={(e) => handleKeyDown(e, index, sys.id)}
               className={clsx(
-                "w-full text-left p-3 border-b border-retro-700/50 hover:bg-retro-700 transition-colors flex justify-between items-center group",
-                selectedId === sys.id ? "bg-retro-700 border-l-4 border-l-retro-accent" : "border-l-4 border-l-transparent"
+                "w-full text-left p-3 border-b border-retro-700/50 hover:bg-retro-700 transition-colors flex justify-between items-center group focus:outline-none focus:bg-retro-700 focus:ring-1 focus:ring-inset focus:ring-retro-accent",
+                selectedId === sys.id && activeView === 'dashboard' ? "bg-retro-700 border-l-4 border-l-retro-accent" : "border-l-4 border-l-transparent"
               )}
             >
               <div>
@@ -46,6 +77,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect 
             </button>
           );
         })}
+      </div>
+
+      <div className="p-2 border-t border-retro-700 bg-retro-900/30">
+        <button
+          onClick={onInfoClick}
+          className={clsx(
+            "w-full flex items-center gap-2 p-2 rounded hover:bg-retro-700 transition-colors text-sm font-medium",
+            activeView === 'info' ? "text-white bg-retro-700" : "text-gray-400"
+          )}
+        >
+          <Info size={16} />
+          Information
+        </button>
       </div>
     </div>
   );

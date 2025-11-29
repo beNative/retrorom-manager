@@ -1,13 +1,50 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { GameEntry } from '../types';
 import { Image, Film, AlertCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface GameTableProps {
   games: GameEntry[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
 }
 
-export const GameTable: React.FC<GameTableProps> = ({ games }) => {
+export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelect }) => {
+  const rowRefs = useRef<(HTMLTableRowElement | null)[]>([]);
+
+  useEffect(() => {
+    rowRefs.current = rowRefs.current.slice(0, games.length);
+  }, [games]);
+
+  const handleKeyDown = (e: React.KeyboardEvent, index: number, id: string) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIndex = Math.min(index + 1, games.length - 1);
+      rowRefs.current[nextIndex]?.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = Math.max(index - 1, 0);
+      rowRefs.current[prevIndex]?.focus();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      rowRefs.current[0]?.focus();
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      rowRefs.current[games.length - 1]?.focus();
+    } else if (e.key === 'PageDown') {
+      e.preventDefault();
+      const nextIndex = Math.min(index + 10, games.length - 1);
+      rowRefs.current[nextIndex]?.focus();
+    } else if (e.key === 'PageUp') {
+      e.preventDefault();
+      const prevIndex = Math.max(index - 10, 0);
+      rowRefs.current[prevIndex]?.focus();
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onSelect(id);
+    }
+  };
+
   return (
     <div className="flex-1 overflow-auto">
       <table className="w-full text-left text-sm border-collapse">
@@ -19,53 +56,66 @@ export const GameTable: React.FC<GameTableProps> = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {games.map((game) => (
-            <tr key={game.id} className="hover:bg-retro-700/30 border-b border-retro-700/50 last:border-0 group">
+          {games.map((game, index) => (
+            <tr
+              key={game.id}
+              ref={el => rowRefs.current[index] = el}
+              tabIndex={0}
+              onClick={() => onSelect(game.id)}
+              onKeyDown={(e) => handleKeyDown(e, index, game.id)}
+              className={clsx(
+                "border-b border-retro-700/50 last:border-0 group cursor-pointer outline-none transition-colors",
+                selectedId === game.id
+                  ? "bg-retro-700 text-white"
+                  : "hover:bg-retro-700/30 text-gray-300",
+                "focus:bg-retro-700 focus:ring-1 focus:ring-inset focus:ring-retro-accent"
+              )}
+            >
               <td className="p-3">
-                <div className="font-medium text-gray-200">
+                <div className="font-medium">
                   {game.name || game.id}
                 </div>
-                <div className="text-xs text-gray-500 font-mono">
+                <div className={clsx("text-xs font-mono", selectedId === game.id ? "text-gray-300" : "text-gray-500")}>
                   {game.path}
                 </div>
               </td>
               <td className="p-3">
                 <div className="flex justify-center gap-2">
-                  <Image 
-                    size={16} 
-                    className={clsx(game.imageExists ? "text-retro-success" : "text-retro-700")} 
+                  <Image
+                    size={16}
+                    className={clsx(game.imageExists ? "text-retro-success" : "text-retro-700")}
                     title={game.image ? `Path: ${game.image}` : "No Image"}
                   />
-                  <Film 
-                    size={16} 
+                  <Film
+                    size={16}
                     className={clsx(game.videoExists ? "text-retro-success" : "text-retro-700")}
                     title={game.video ? `Path: ${game.video}` : "No Video"}
                   />
                 </div>
               </td>
               <td className="p-3 text-center">
-                 {!game.romExists && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-retro-error/20 text-retro-error text-xs font-bold">
-                        <AlertCircle size={12} /> Missing File
-                    </span>
-                 )}
-                 {game.romExists && !game.inGamelist && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-retro-warning/20 text-retro-warning text-xs font-bold">
-                        <AlertCircle size={12} /> New ROM
-                    </span>
-                 )}
-                 {game.romExists && game.inGamelist && (
-                    <span className="text-xs text-gray-500">OK</span>
-                 )}
+                {!game.romExists && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-retro-error/20 text-retro-error text-xs font-bold">
+                    <AlertCircle size={12} /> Missing File
+                  </span>
+                )}
+                {game.romExists && !game.inGamelist && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-retro-warning/20 text-retro-warning text-xs font-bold">
+                    <AlertCircle size={12} /> New ROM
+                  </span>
+                )}
+                {game.romExists && game.inGamelist && (
+                  <span className={clsx("text-xs", selectedId === game.id ? "text-gray-300" : "text-gray-500")}>OK</span>
+                )}
               </td>
             </tr>
           ))}
           {games.length === 0 && (
-             <tr>
-                 <td colSpan={3} className="p-8 text-center text-gray-500">
-                     No games found in this system directory.
-                 </td>
-             </tr>
+            <tr>
+              <td colSpan={3} className="p-8 text-center text-gray-500">
+                No games found in this system directory.
+              </td>
+            </tr>
           )}
         </tbody>
       </table>
