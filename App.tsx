@@ -9,6 +9,7 @@ import StatusBar from './components/StatusBar';
 import { InfoTab } from './components/InfoTab';
 import { SettingsTab } from './components/SettingsTab';
 import { DuplicateFinder } from './components/DuplicateFinder';
+import { BiosChecker } from './components/BiosChecker';
 import { FolderOpen, Terminal } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -21,7 +22,8 @@ const electron = (window as any).electron || {
   getDocContent: async () => '# No Electron',
   saveSetting: async () => { },
   findDuplicates: async () => ({}),
-  deleteFiles: async () => ({ deleted: [], failed: [] })
+  deleteFiles: async () => ({ deleted: [], failed: [] }),
+  checkBios: async () => []
 };
 
 const App: React.FC = () => {
@@ -31,7 +33,7 @@ const App: React.FC = () => {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
-  const [activeView, setActiveView] = useState<'dashboard' | 'info' | 'settings' | 'duplicates'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'info' | 'settings' | 'duplicates' | 'bios'>('dashboard');
   const [dryRunMode, setDryRunMode] = useState(true);
 
   useEffect(() => {
@@ -140,6 +142,7 @@ const App: React.FC = () => {
             onInfoClick={() => setActiveView('info')}
             onSettingsClick={() => setActiveView('settings')}
             onDuplicatesClick={() => setActiveView('duplicates')}
+            onBiosClick={() => setActiveView('bios')}
             activeView={activeView}
           />
 
@@ -154,6 +157,8 @@ const App: React.FC = () => {
               />
             ) : activeView === 'duplicates' ? (
               <DuplicateFinder systems={systems} />
+            ) : activeView === 'bios' ? (
+              <BiosChecker basePath={basePath} />
             ) : selectedSystem ? (
               <>
                 <SystemHeader

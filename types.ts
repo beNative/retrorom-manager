@@ -94,3 +94,17 @@ export interface DuplicateGroup {
   name: string;
   files: DuplicateFile[];
 }
+
+export interface BiosDefinition {
+  system: string;
+  filename: string;
+  description: string;
+  md5?: string;
+  isOptional?: boolean;
+}
+
+export interface BiosResult {
+  definition: BiosDefinition;
+  found: boolean;
+  path?: string;
+}

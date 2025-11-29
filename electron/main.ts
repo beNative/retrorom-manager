@@ -5,6 +5,7 @@ import { ScanService } from './services/scanService';
 import { FixService } from './services/fixService';
 import { SettingsService } from './services/settingsService';
 import { DuplicateService } from './services/duplicateService';
+import { BiosService } from './services/biosService';
 
 let mainWindow: BrowserWindow | null = null;
 let globalBasePath = '';
@@ -176,4 +177,9 @@ ipcMain.handle('delete-files', async (_, filePaths: string[]) => {
   }
 
   return { deleted, failed };
+});
+
+ipcMain.handle('check-bios', async (_, basePath: string) => {
+  const biosService = new BiosService();
+  return biosService.checkBios(basePath);
 });

@@ -12,4 +12,5 @@ contextBridge.exposeInMainWorld('electron', {
   saveSetting: (key: string, value: any) => ipcRenderer.invoke('save-setting', { key, value }),
   findDuplicates: (systems: any[]) => ipcRenderer.invoke('find-duplicates', systems),
   deleteFiles: (filePaths: string[]) => ipcRenderer.invoke('delete-files', filePaths),
+  checkBios: (basePath: string) => ipcRenderer.invoke('check-bios', basePath),
 });

@@ -14,6 +14,7 @@ declare global {
             saveSetting: (key: string, value: any) => Promise<void>;
             findDuplicates: (systems: any[]) => Promise<Record<string, any[]>>;
             deleteFiles: (filePaths: string[]) => Promise<{ deleted: string[], failed: string[] }>;
+            checkBios: (basePath: string) => Promise<any[]>;
         };
     }
 }

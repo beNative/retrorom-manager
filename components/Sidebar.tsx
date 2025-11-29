@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { System } from '../types';
-import { Gamepad2, AlertTriangle, CheckCircle2, Info, Settings, Copy } from 'lucide-react';
+import { Gamepad2, AlertTriangle, CheckCircle2, Info, Settings, Copy, Cpu } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface SidebarProps {
@@ -10,10 +10,11 @@ interface SidebarProps {
   onInfoClick: () => void;
   onSettingsClick: () => void;
   onDuplicatesClick: () => void;
-  activeView: 'dashboard' | 'info' | 'settings' | 'duplicates';
+  onBiosClick: () => void;
+  activeView: 'dashboard' | 'info' | 'settings' | 'duplicates' | 'bios';
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect, onInfoClick, onSettingsClick, onDuplicatesClick, activeView }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect, onInfoClick, onSettingsClick, onDuplicatesClick, onBiosClick, activeView }) => {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
@@ -107,6 +108,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
         >
           <Copy size={16} />
           Duplicates
+        </button>
+        <button
+          onClick={onBiosClick}
+          className={clsx(
+            "w-full flex items-center gap-2 p-2 rounded hover:bg-retro-700 transition-colors text-sm font-medium dark:hover:bg-retro-700 hover:bg-gray-200",
+            activeView === 'bios'
+              ? "text-white bg-retro-700 dark:text-white dark:bg-retro-700 text-blue-600 bg-blue-50"
+              : "text-gray-400 dark:text-gray-400 text-gray-600"
+          )}
+        >
+          <Cpu size={16} />
+          BIOS
         </button>
         <button
           onClick={onSettingsClick}
