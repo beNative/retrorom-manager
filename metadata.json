@@ -1,0 +1,5 @@
+{
+  "name": "RetroRom Manager",
+  "description": "A cross-platform tool to scan, clean, and manage EmulationStation ROM collections and media.",
+  "requestFramePermissions": []
+}
