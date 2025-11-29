@@ -11,6 +11,7 @@ declare global {
             close: () => Promise<void>;
             getSettings: () => Promise<any>;
             getDocContent: (filename: string) => Promise<string>;
+            saveSetting: (key: string, value: any) => Promise<void>;
         };
     }
 }

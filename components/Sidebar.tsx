@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { System } from '../types';
-import { Gamepad2, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
+import { Gamepad2, AlertTriangle, CheckCircle2, Info, Settings } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface SidebarProps {
@@ -8,10 +8,11 @@ interface SidebarProps {
   selectedId: string | null;
   onSelect: (id: string) => void;
   onInfoClick: () => void;
-  activeView: 'dashboard' | 'info';
+  onSettingsClick: () => void;
+  activeView: 'dashboard' | 'info' | 'settings';
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect, onInfoClick, activeView }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect, onInfoClick, onSettingsClick, activeView }) => {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
@@ -79,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
         })}
       </div>
 
-      <div className="p-2 border-t border-retro-700 bg-retro-900/30">
+      <div className="p-2 border-t border-retro-700 bg-retro-900/30 flex flex-col gap-1">
         <button
           onClick={onInfoClick}
           className={clsx(
@@ -89,6 +90,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
         >
           <Info size={16} />
           Information
+        </button>
+        <button
+          onClick={onSettingsClick}
+          className={clsx(
+            "w-full flex items-center gap-2 p-2 rounded hover:bg-retro-700 transition-colors text-sm font-medium",
+            activeView === 'settings' ? "text-white bg-retro-700" : "text-gray-400"
+          )}
+        >
+          <Settings size={16} />
+          Settings
         </button>
       </div>
     </div>

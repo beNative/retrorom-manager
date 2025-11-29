@@ -9,4 +9,5 @@ contextBridge.exposeInMainWorld('electron', {
   close: () => ipcRenderer.invoke('window-close'),
   getSettings: () => ipcRenderer.invoke('get-settings'),
   getDocContent: (filename: string) => ipcRenderer.invoke('get-doc-content', filename),
+  saveSetting: (key: string, value: any) => ipcRenderer.invoke('save-setting', { key, value }),
 });

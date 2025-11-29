@@ -7,6 +7,7 @@ import { SystemHeader } from './components/SystemHeader';
 import TitleBar from './components/TitleBar';
 import StatusBar from './components/StatusBar';
 import { InfoTab } from './components/InfoTab';
+import { SettingsTab } from './components/SettingsTab';
 import { FolderOpen, Terminal } from 'lucide-react';
 
 // Mock Electron Bridge for type safety if window.electron is missing (dev mode in browser)
@@ -15,7 +16,8 @@ const electron = (window as any).electron || {
   scanRoms: async () => ({ systems: [] }),
   fixIssues: async () => ({ logs: ['Electron not found - dev mode'], success: false }),
   getSettings: async () => ({}),
-  getDocContent: async () => '# No Electron'
+  getDocContent: async () => '# No Electron',
+  saveSetting: async () => { }
 };
 
 const App: React.FC = () => {
@@ -25,7 +27,8 @@ const App: React.FC = () => {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
-  const [activeView, setActiveView] = useState<'dashboard' | 'info'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'info' | 'settings'>('dashboard');
+  const [dryRunMode, setDryRunMode] = useState(true);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -33,6 +36,9 @@ const App: React.FC = () => {
       if (settings?.lastOpenedPath) {
         setBasePath(settings.lastOpenedPath);
         performScan(settings.lastOpenedPath);
+      }
+      if (settings?.dryRunMode !== undefined) {
+        setDryRunMode(settings.dryRunMode);
       }
     };
     loadSettings();
@@ -65,18 +71,26 @@ const App: React.FC = () => {
   const handleFix = async (action: 'SYNC_GAMELIST' | 'LINK_MEDIA' | 'CLEAN_MEDIA', dryRun: boolean) => {
     if (!selectedSystemId) return;
 
+    // Use the dryRunMode state if dryRun arg is passed as true (default from UI might need adjustment)
+    // Actually, the UI calls this. We should use the state value if the UI doesn't override it.
+    // But wait, the SystemHeader calls this. Let's assume SystemHeader passes the 'dryRun' value.
+    // However, the user wants the "Default" to be configurable.
+    // So we should probably ignore the 'dryRun' argument from SystemHeader if we want to enforce the global setting,
+    // OR update SystemHeader to read this global setting.
+    // For now, let's use the global setting `dryRunMode` for the actual operation.
+
     setLoading(true);
-    setLogs(prev => [...prev, `Starting ${action} on ${selectedSystemId} (${dryRun ? 'Dry Run' : 'Live'})...`]);
+    setLogs(prev => [...prev, `Starting ${action} on ${selectedSystemId} (${dryRunMode ? 'Dry Run' : 'Live'})...`]);
 
     try {
       const result: FixResult = await electron.fixIssues({
         systemId: selectedSystemId,
         action,
-        dryRun
+        dryRun: dryRunMode
       });
       setLogs(prev => [...prev, ...result.logs]);
 
-      if (!dryRun && result.success && basePath) {
+      if (!dryRunMode && result.success && basePath) {
         // Re-scan to show updated state
         await performScan(basePath);
       }
@@ -127,6 +141,7 @@ const App: React.FC = () => {
           selectedId={selectedSystemId}
           onSelect={handleSystemSelect}
           onInfoClick={() => setActiveView('info')}
+          onSettingsClick={() => setActiveView('settings')}
           activeView={activeView}
         />
 
@@ -134,11 +149,16 @@ const App: React.FC = () => {
         <div className="flex-1 flex flex-col min-w-0 bg-retro-900">
           {activeView === 'info' ? (
             <InfoTab />
+          ) : activeView === 'settings' ? (
+            <SettingsTab
+              dryRunMode={dryRunMode}
+              setDryRunMode={setDryRunMode}
+            />
           ) : selectedSystem ? (
             <>
               <SystemHeader
                 system={selectedSystem}
-                onFix={handleFix}
+                onFix={(action, _) => handleFix(action, dryRunMode)} // Pass global dryRunMode
                 loading={loading}
               />
 
@@ -151,7 +171,7 @@ const App: React.FC = () => {
                   </div>
 
                   {/* Game List - Seamless Layout (Removed Card Styling) */}
-                  <div className="lg:col-span-2 flex flex-col h-[500px] lg:h-auto border-r border-retro-700 pr-2">
+                  <div className="lg:col-span-2 flex flex-col h-full min-h-0 border-r border-retro-700 pr-2">
                     <GameTable
                       games={selectedSystem.games}
                       selectedId={selectedGameId}
@@ -160,8 +180,8 @@ const App: React.FC = () => {
                   </div>
 
                   {/* Logs / Console - Seamless Layout */}
-                  <div className="lg:col-span-1 flex flex-col overflow-hidden h-64 lg:h-auto pl-2">
-                    <div className="p-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-gray-400 border-b border-retro-700 mb-2">
+                  <div className="lg:col-span-1 flex flex-col h-full min-h-0 pl-2 overflow-hidden">
+                    <div className="p-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-gray-400 border-b border-retro-700 mb-2 flex-shrink-0">
                       <Terminal size={14} /> Operation Logs
                     </div>
                     <div className="flex-1 overflow-auto font-mono text-xs text-green-400 space-y-1">

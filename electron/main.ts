@@ -125,10 +125,17 @@ ipcMain.handle('get-doc-content', async (_, filename: string) => {
 
   let docPath = '';
   if (isDev) {
-    docPath = path.join(__dirname, '../../docs', filename);
+    // In dev, main.js is in dist-electron/main.js
+    // Docs are in docs/
+    // So we need to go up one level from dist-electron to root, then into docs
+    docPath = path.join(__dirname, '../docs', filename);
   } else {
+    // In prod, resources/app/dist-electron/main.js (usually)
+    // Docs are in resources/app/docs
     docPath = path.join(process.resourcesPath, 'app', 'docs', filename);
   }
+
+  console.log(`[get-doc-content] Request: ${filename}, Resolved: ${docPath}`); // Debug log
 
   try {
     if (fs.existsSync(docPath)) {
@@ -139,4 +146,9 @@ ipcMain.handle('get-doc-content', async (_, filename: string) => {
     console.error('Error reading doc:', error);
     return '# Error loading document';
   }
+});
+
+ipcMain.handle('save-setting', (_, args) => {
+  const { key, value } = args;
+  settingsService.set(key, value);
 });
