@@ -1,9 +1,9 @@
 import React from 'react';
-import { Bell, Check, XCircle } from 'lucide-react';
+import { Bell, Check } from 'lucide-react';
 
 const StatusBar: React.FC = () => {
     return (
-        <div className="h-6 bg-[#7aa2f7] text-[#1a1b26] flex items-center justify-between px-3 text-xs select-none font-medium">
+        <div className="h-6 bg-blue-600 dark:bg-retro-800 text-white dark:text-gray-300 flex items-center justify-between px-3 text-xs select-none font-medium transition-colors duration-200">
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                     <Check size={12} />
