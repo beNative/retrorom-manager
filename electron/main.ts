@@ -37,9 +37,10 @@ function createWindow() {
     // root/
     //   resources/
     //     app/
-    //       dist-electron/main.js
+    //       dist-electron/electron/main.js
     //       dist/index.html
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    // We are in dist-electron/electron, so we need to go up two levels to get to dist
+    mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
   }
 }
 
@@ -120,22 +121,12 @@ ipcMain.handle('get-settings', () => {
 });
 
 ipcMain.handle('get-doc-content', async (_, filename: string) => {
-  const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
-  // In dev, docs are in ../docs relative to electron/main.ts
-  // In prod, docs are in resources/app/docs, and main.js is in resources/app/dist-electron
-  // So relative path might need adjustment or use process.resourcesPath
+  // In both dev and prod (asar), the structure relative to main.js (in dist-electron/electron)
+  // places docs at ../../docs
+  // Dev: root/dist-electron/electron/main.js -> root/docs
+  // Prod: app.asar/dist-electron/electron/main.js -> app.asar/docs
 
-  let docPath = '';
-  if (isDev) {
-    // In dev, main.js is in dist-electron/main.js
-    // Docs are in docs/
-    // So we need to go up one level from dist-electron to root, then into docs
-    docPath = path.join(__dirname, '../docs', filename);
-  } else {
-    // In prod, resources/app/dist-electron/main.js (usually)
-    // Docs are in resources/app/docs
-    docPath = path.join(process.resourcesPath, 'app', 'docs', filename);
-  }
+  const docPath = path.join(__dirname, '../../docs', filename);
 
   console.log(`[get-doc-content] Request: ${filename}, Resolved: ${docPath}`); // Debug log
 

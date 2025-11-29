@@ -48,11 +48,11 @@ export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelec
   return (
     <div className="flex-1 overflow-auto">
       <table className="w-full text-left text-sm border-collapse">
-        <thead className="bg-retro-900 sticky top-0 z-10 text-xs uppercase text-gray-500">
+        <thead className="bg-gray-100 dark:bg-retro-900 sticky top-0 z-10 text-xs uppercase text-gray-500 transition-colors duration-200">
           <tr>
-            <th className="p-3 border-b border-retro-700">Name / ROM</th>
-            <th className="p-3 border-b border-retro-700 text-center">Media</th>
-            <th className="p-3 border-b border-retro-700 text-center">Status</th>
+            <th className="p-3 border-b border-gray-200 dark:border-retro-700">Name / ROM</th>
+            <th className="p-3 border-b border-gray-200 dark:border-retro-700 text-center">Media</th>
+            <th className="p-3 border-b border-gray-200 dark:border-retro-700 text-center">Status</th>
           </tr>
         </thead>
         <tbody>
@@ -64,33 +64,35 @@ export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelec
               onClick={() => onSelect(game.id)}
               onKeyDown={(e) => handleKeyDown(e, index, game.id)}
               className={clsx(
-                "border-b border-retro-700/50 last:border-0 group cursor-pointer outline-none transition-colors",
+                "border-b border-gray-200 dark:border-retro-700/50 last:border-0 group cursor-pointer outline-none transition-colors",
                 selectedId === game.id
-                  ? "bg-retro-700 text-white"
-                  : "hover:bg-retro-700/30 text-gray-300",
-                "focus:bg-retro-700 focus:ring-1 focus:ring-inset focus:ring-retro-accent"
+                  ? "bg-blue-50 text-blue-900 dark:bg-retro-700 dark:text-white"
+                  : "hover:bg-gray-100 dark:hover:bg-retro-700/30 text-gray-700 dark:text-gray-300",
+                "focus:bg-gray-100 dark:focus:bg-retro-700 focus:ring-1 focus:ring-inset focus:ring-retro-accent"
               )}
             >
               <td className="p-3">
                 <div className="font-medium">
                   {game.name || game.id}
                 </div>
-                <div className={clsx("text-xs font-mono", selectedId === game.id ? "text-gray-300" : "text-gray-500")}>
+                <div className={clsx("text-xs font-mono", selectedId === game.id ? "text-blue-700 dark:text-gray-300" : "text-gray-500")}>
                   {game.path}
                 </div>
               </td>
               <td className="p-3">
                 <div className="flex justify-center gap-2">
-                  <Image
-                    size={16}
-                    className={clsx(game.imageExists ? "text-retro-success" : "text-retro-700")}
-                    title={game.image ? `Path: ${game.image}` : "No Image"}
-                  />
-                  <Film
-                    size={16}
-                    className={clsx(game.videoExists ? "text-retro-success" : "text-retro-700")}
-                    title={game.video ? `Path: ${game.video}` : "No Video"}
-                  />
+                  <span title={game.image ? `Path: ${game.image}` : "No Image"}>
+                    <Image
+                      size={16}
+                      className={clsx(game.imageExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
+                    />
+                  </span>
+                  <span title={game.video ? `Path: ${game.video}` : "No Video"}>
+                    <Film
+                      size={16}
+                      className={clsx(game.videoExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
+                    />
+                  </span>
                 </div>
               </td>
               <td className="p-3 text-center">
@@ -105,7 +107,7 @@ export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelec
                   </span>
                 )}
                 {game.romExists && game.inGamelist && (
-                  <span className={clsx("text-xs", selectedId === game.id ? "text-gray-300" : "text-gray-500")}>OK</span>
+                  <span className={clsx("text-xs", selectedId === game.id ? "text-blue-700 dark:text-gray-300" : "text-gray-500")}>OK</span>
                 )}
               </td>
             </tr>

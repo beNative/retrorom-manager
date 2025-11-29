@@ -43,9 +43,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
   };
 
   return (
-    <div className="w-64 bg-retro-800 border-r border-retro-700 flex flex-col flex-shrink-0 dark:bg-retro-800 dark:border-retro-700 bg-white border-gray-200">
-      <div className="p-4 border-b border-retro-700 bg-retro-900/50 dark:border-retro-700 dark:bg-retro-900/50 border-gray-200 bg-gray-50">
-        <h2 className="font-bold text-retro-accent flex items-center gap-2 dark:text-retro-accent text-blue-600">
+    <div className="w-64 flex flex-col flex-shrink-0 border-r transition-colors duration-200 bg-white border-gray-200 dark:bg-retro-800 dark:border-retro-700">
+      <div className="p-4 border-b transition-colors duration-200 border-gray-200 bg-gray-50 dark:border-retro-700 dark:bg-retro-900/50">
+        <h2 className="font-bold flex items-center gap-2 text-blue-600 dark:text-retro-accent">
           <Gamepad2 /> Systems
         </h2>
       </div>
@@ -60,14 +60,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
               onClick={() => onSelect(sys.id)}
               onKeyDown={(e) => handleKeyDown(e, index, sys.id)}
               className={clsx(
-                "w-full text-left p-3 border-b border-retro-700/50 hover:bg-retro-700 transition-colors flex justify-between items-center group focus:outline-none focus:bg-retro-700 focus:ring-1 focus:ring-inset focus:ring-retro-accent dark:border-retro-700/50 dark:hover:bg-retro-700 dark:focus:bg-retro-700 border-gray-100 hover:bg-gray-100 focus:bg-gray-100",
+                "w-full text-left p-3 border-b transition-colors flex justify-between items-center group focus:outline-none focus:ring-1 focus:ring-inset",
+                "border-gray-100 hover:bg-gray-100 focus:bg-gray-100 focus:ring-retro-accent",
+                "dark:border-retro-700/50 dark:hover:bg-retro-700 dark:focus:bg-retro-700 dark:focus:ring-retro-accent",
                 selectedId === sys.id && activeView === 'dashboard'
-                  ? "bg-retro-700 border-l-4 border-l-retro-accent dark:bg-retro-700 dark:border-l-retro-accent bg-blue-50 border-l-blue-600"
+                  ? "bg-blue-50 border-l-4 border-l-blue-600 dark:bg-retro-700 dark:border-l-retro-accent"
                   : "border-l-4 border-l-transparent"
               )}
             >
               <div>
-                <div className="font-semibold text-sm group-hover:text-white text-gray-300 dark:group-hover:text-white dark:text-gray-300 text-gray-700 group-hover:text-gray-900">
+                <div className="font-semibold text-sm transition-colors text-gray-700 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">
                   {sys.name}
                 </div>
                 <div className="text-xs text-gray-500">
@@ -84,14 +86,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
         })}
       </div>
 
-      <div className="p-2 border-t border-retro-700 bg-retro-900/30 flex flex-col gap-1 dark:border-retro-700 dark:bg-retro-900/30 border-gray-200 bg-gray-50">
+      <div className="p-2 border-t transition-colors duration-200 flex flex-col gap-1 border-gray-200 bg-gray-50 dark:border-retro-700 dark:bg-retro-900/30">
         <button
           onClick={onInfoClick}
           className={clsx(
-            "w-full flex items-center gap-2 p-2 rounded hover:bg-retro-700 transition-colors text-sm font-medium dark:hover:bg-retro-700 hover:bg-gray-200",
+            "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
+            "hover:bg-gray-200 dark:hover:bg-retro-700",
             activeView === 'info'
-              ? "text-white bg-retro-700 dark:text-white dark:bg-retro-700 text-blue-600 bg-blue-50"
-              : "text-gray-400 dark:text-gray-400 text-gray-600"
+              ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
+              : "text-gray-600 dark:text-gray-400"
           )}
         >
           <Info size={16} />
@@ -100,10 +103,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
         <button
           onClick={onDuplicatesClick}
           className={clsx(
-            "w-full flex items-center gap-2 p-2 rounded hover:bg-retro-700 transition-colors text-sm font-medium dark:hover:bg-retro-700 hover:bg-gray-200",
+            "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
+            "hover:bg-gray-200 dark:hover:bg-retro-700",
             activeView === 'duplicates'
-              ? "text-white bg-retro-700 dark:text-white dark:bg-retro-700 text-blue-600 bg-blue-50"
-              : "text-gray-400 dark:text-gray-400 text-gray-600"
+              ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
+              : "text-gray-600 dark:text-gray-400"
           )}
         >
           <Copy size={16} />
@@ -112,10 +116,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
         <button
           onClick={onBiosClick}
           className={clsx(
-            "w-full flex items-center gap-2 p-2 rounded hover:bg-retro-700 transition-colors text-sm font-medium dark:hover:bg-retro-700 hover:bg-gray-200",
+            "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
+            "hover:bg-gray-200 dark:hover:bg-retro-700",
             activeView === 'bios'
-              ? "text-white bg-retro-700 dark:text-white dark:bg-retro-700 text-blue-600 bg-blue-50"
-              : "text-gray-400 dark:text-gray-400 text-gray-600"
+              ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
+              : "text-gray-600 dark:text-gray-400"
           )}
         >
           <Cpu size={16} />
@@ -124,10 +129,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
         <button
           onClick={onSettingsClick}
           className={clsx(
-            "w-full flex items-center gap-2 p-2 rounded hover:bg-retro-700 transition-colors text-sm font-medium dark:hover:bg-retro-700 hover:bg-gray-200",
+            "w-full flex items-center gap-2 p-2 rounded transition-colors text-sm font-medium",
+            "hover:bg-gray-200 dark:hover:bg-retro-700",
             activeView === 'settings'
-              ? "text-white bg-retro-700 dark:text-white dark:bg-retro-700 text-blue-600 bg-blue-50"
-              : "text-gray-400 dark:text-gray-400 text-gray-600"
+              ? "text-blue-600 bg-blue-50 dark:text-white dark:bg-retro-700"
+              : "text-gray-600 dark:text-gray-400"
           )}
         >
           <Settings size={16} />
