@@ -25,11 +25,11 @@ export interface GameEntry {
   releaseDate?: string;
   genre?: string;
   rating?: number;
-  
+
   // Computed Metadata
   id: string; // Normalized ID (e.g. filename without ext)
   systemId: string;
-  
+
   // Validation Flags
   romExists: boolean;
   imageExists: boolean;
@@ -81,4 +81,16 @@ export interface FixRequest {
 export interface FixResult {
   logs: string[];
   success: boolean;
+}
+
+export interface DuplicateFile {
+  path: string;
+  filename: string;
+  systemId: string;
+  size: number;
+}
+
+export interface DuplicateGroup {
+  name: string;
+  files: DuplicateFile[];
 }

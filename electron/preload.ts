@@ -10,4 +10,6 @@ contextBridge.exposeInMainWorld('electron', {
   getSettings: () => ipcRenderer.invoke('get-settings'),
   getDocContent: (filename: string) => ipcRenderer.invoke('get-doc-content', filename),
   saveSetting: (key: string, value: any) => ipcRenderer.invoke('save-setting', { key, value }),
+  findDuplicates: (systems: any[]) => ipcRenderer.invoke('find-duplicates', systems),
+  deleteFiles: (filePaths: string[]) => ipcRenderer.invoke('delete-files', filePaths),
 });

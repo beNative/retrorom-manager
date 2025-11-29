@@ -1,7 +1,7 @@
 {
   "name": "retro-rom-manager",
   "version": "1.0.0",
-  "main": "dist-electron/main.js",
+  "main": "dist-electron/electron/main.js",
   "author": "Retro Enthusiast",
   "description": "A cross-platform tool to scan, clean, and manage EmulationStation ROM collections and media.",
   "scripts": {

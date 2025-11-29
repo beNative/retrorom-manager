@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { System } from '../types';
-import { Gamepad2, AlertTriangle, CheckCircle2, Info, Settings } from 'lucide-react';
+import { Gamepad2, AlertTriangle, CheckCircle2, Info, Settings, Copy } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface SidebarProps {
@@ -9,10 +9,11 @@ interface SidebarProps {
   onSelect: (id: string) => void;
   onInfoClick: () => void;
   onSettingsClick: () => void;
-  activeView: 'dashboard' | 'info' | 'settings';
+  onDuplicatesClick: () => void;
+  activeView: 'dashboard' | 'info' | 'settings' | 'duplicates';
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect, onInfoClick, onSettingsClick, activeView }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect, onInfoClick, onSettingsClick, onDuplicatesClick, activeView }) => {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
@@ -94,6 +95,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
         >
           <Info size={16} />
           Information
+        </button>
+        <button
+          onClick={onDuplicatesClick}
+          className={clsx(
+            "w-full flex items-center gap-2 p-2 rounded hover:bg-retro-700 transition-colors text-sm font-medium dark:hover:bg-retro-700 hover:bg-gray-200",
+            activeView === 'duplicates'
+              ? "text-white bg-retro-700 dark:text-white dark:bg-retro-700 text-blue-600 bg-blue-50"
+              : "text-gray-400 dark:text-gray-400 text-gray-600"
+          )}
+        >
+          <Copy size={16} />
+          Duplicates
         </button>
         <button
           onClick={onSettingsClick}

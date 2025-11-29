@@ -4,6 +4,7 @@ import fs from 'fs';
 import { ScanService } from './services/scanService';
 import { FixService } from './services/fixService';
 import { SettingsService } from './services/settingsService';
+import { DuplicateService } from './services/duplicateService';
 
 let mainWindow: BrowserWindow | null = null;
 let globalBasePath = '';
@@ -151,4 +152,28 @@ ipcMain.handle('get-doc-content', async (_, filename: string) => {
 ipcMain.handle('save-setting', (_, args) => {
   const { key, value } = args;
   settingsService.set(key, value);
+});
+
+ipcMain.handle('find-duplicates', async (_, systems) => {
+  const duplicateService = new DuplicateService();
+  return duplicateService.findDuplicates(systems);
+});
+
+ipcMain.handle('delete-files', async (_, filePaths: string[]) => {
+  const deleted: string[] = [];
+  const failed: string[] = [];
+
+  for (const filePath of filePaths) {
+    try {
+      if (fs.existsSync(filePath)) {
+        await fs.promises.unlink(filePath);
+        deleted.push(filePath);
+      }
+    } catch (error) {
+      console.error(`Failed to delete ${filePath}:`, error);
+      failed.push(filePath);
+    }
+  }
+
+  return { deleted, failed };
 });

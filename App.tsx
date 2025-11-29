@@ -8,6 +8,7 @@ import TitleBar from './components/TitleBar';
 import StatusBar from './components/StatusBar';
 import { InfoTab } from './components/InfoTab';
 import { SettingsTab } from './components/SettingsTab';
+import { DuplicateFinder } from './components/DuplicateFinder';
 import { FolderOpen, Terminal } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -18,7 +19,9 @@ const electron = (window as any).electron || {
   fixIssues: async () => ({ logs: ['Electron not found - dev mode'], success: false }),
   getSettings: async () => ({}),
   getDocContent: async () => '# No Electron',
-  saveSetting: async () => { }
+  saveSetting: async () => { },
+  findDuplicates: async () => ({}),
+  deleteFiles: async () => ({ deleted: [], failed: [] })
 };
 
 const App: React.FC = () => {
@@ -28,7 +31,7 @@ const App: React.FC = () => {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
-  const [activeView, setActiveView] = useState<'dashboard' | 'info' | 'settings'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'info' | 'settings' | 'duplicates'>('dashboard');
   const [dryRunMode, setDryRunMode] = useState(true);
 
   useEffect(() => {
@@ -136,6 +139,7 @@ const App: React.FC = () => {
             onSelect={handleSystemSelect}
             onInfoClick={() => setActiveView('info')}
             onSettingsClick={() => setActiveView('settings')}
+            onDuplicatesClick={() => setActiveView('duplicates')}
             activeView={activeView}
           />
 
@@ -148,6 +152,8 @@ const App: React.FC = () => {
                 dryRunMode={dryRunMode}
                 setDryRunMode={setDryRunMode}
               />
+            ) : activeView === 'duplicates' ? (
+              <DuplicateFinder systems={systems} />
             ) : selectedSystem ? (
               <>
                 <SystemHeader
