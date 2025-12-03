@@ -12,7 +12,9 @@ import { DuplicateFinder } from './components/DuplicateFinder';
 import { BiosChecker } from './components/BiosChecker';
 import { MediaViewer } from './components/MediaViewer';
 import { MediaPanel } from './components/MediaPanel';
-import { FolderOpen, Terminal } from 'lucide-react';
+import { ResizableSplitter } from './components/ResizableSplitter';
+import { FolderOpen, Terminal, ChevronDown, ChevronRight } from 'lucide-react';
+import { clsx } from 'clsx';
 
 // Mock Electron Bridge for type safety if window.electron is missing (dev mode in browser)
 const electron = (window as any).electron || {
@@ -42,6 +44,8 @@ const App: React.FC = () => {
     type: 'unknown',
     title: ''
   });
+  const [rightPanelWidth, setRightPanelWidth] = useState(400);
+  const [logsCollapsed, setLogsCollapsed] = useState(false);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -118,6 +122,13 @@ const App: React.FC = () => {
     setActiveView('dashboard');
   };
 
+  const handleResize = (delta: number) => {
+    setRightPanelWidth(prev => {
+      const newWidth = prev - delta; // Dragging left increases width
+      return Math.max(250, Math.min(newWidth, 800)); // Clamp width
+    });
+  };
+
   if (!basePath) {
     return (
       <div className="h-screen w-screen flex flex-col bg-retro-900 text-white overflow-hidden">
@@ -179,49 +190,66 @@ const App: React.FC = () => {
                 loading={loading}
               />
 
-              <div className="flex-1 overflow-auto lg:overflow-hidden p-4">
-                <div className="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-[auto_1fr] gap-4 h-auto lg:h-full">
+              <div className="flex-1 overflow-hidden p-4 flex flex-col lg:flex-row gap-0 relative">
 
-                  {/* Dashboard / Stats */}
-                  <div className="lg:col-span-3">
+                <div className="flex-1 flex flex-col min-h-0">
+                  {/* Dashboard */}
+                  <div className="mb-4 flex-shrink-0">
                     <Dashboard stats={selectedSystem.stats} />
                   </div>
 
-                  {/* Game List - Seamless Layout (Removed Card Styling) */}
-                  <div className="lg:col-span-2 flex flex-col h-full min-h-0 border-r border-gray-200 dark:border-retro-700 pr-2 transition-colors duration-200">
-                    <GameTable
-                      games={selectedSystem.games}
-                      selectedId={selectedGameId}
-                      onSelect={setSelectedGameId}
-                      onViewMedia={handleViewMedia}
-                    />
-                  </div>
+                  {/* Split View */}
+                  <div className="flex-1 flex min-h-0 border border-gray-200 dark:border-retro-700 rounded-lg overflow-hidden bg-white dark:bg-retro-800">
 
-                  {/* Right Column: Media Panel + Logs */}
-                  <div className="lg:col-span-1 flex flex-col h-full min-h-0 pl-2 gap-4 overflow-hidden">
-
-                    {/* Media Panel */}
-                    <div className="flex-1 min-h-[300px] flex flex-col">
-                      <MediaPanel game={selectedSystem.games.find(g => g.id === selectedGameId) || null} />
+                    {/* Left Panel: Game List */}
+                    <div className="flex-1 flex flex-col min-w-0">
+                      <GameTable
+                        games={selectedSystem.games}
+                        selectedId={selectedGameId}
+                        onSelect={setSelectedGameId}
+                        onViewMedia={handleViewMedia}
+                      />
                     </div>
 
-                    {/* Logs / Console */}
-                    <div className="h-1/3 flex flex-col overflow-hidden border-t border-gray-200 dark:border-retro-700 pt-2">
-                      <div className="p-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-2 flex-shrink-0 transition-colors duration-200">
-                        <Terminal size={14} /> Operation Logs
+                    {/* Splitter */}
+                    <ResizableSplitter onResize={handleResize} className="bg-gray-100 dark:bg-retro-900 border-l border-r border-gray-200 dark:border-retro-700" />
+
+                    {/* Right Panel: Media & Logs */}
+                    <div
+                      style={{ width: rightPanelWidth }}
+                      className="flex flex-col min-w-0 flex-shrink-0 bg-gray-50 dark:bg-retro-900/50 transition-[width] duration-0 ease-linear"
+                    >
+                      {/* Media Panel */}
+                      <div className="flex-1 min-h-0 flex flex-col p-2 overflow-hidden">
+                        <MediaPanel game={selectedSystem.games.find(g => g.id === selectedGameId) || null} />
                       </div>
-                      <div className="flex-1 overflow-auto font-mono text-xs text-green-600 dark:text-green-400 space-y-1 bg-black/5 dark:bg-black/20 rounded p-2">
-                        {logs.length === 0 && <span className="text-gray-500 dark:text-gray-600">Ready...</span>}
-                        {logs.map((log, i) => (
-                          <div key={i} className="break-all border-b border-gray-200 dark:border-gray-800/50 pb-1 mb-1 last:border-0 transition-colors duration-200">
-                            {log}
+
+                      {/* Logs / Console */}
+                      <div className={clsx("flex flex-col border-t border-gray-200 dark:border-retro-700 transition-all duration-300 ease-in-out", logsCollapsed ? "h-9" : "h-1/3")}>
+                        <button
+                          onClick={() => setLogsCollapsed(!logsCollapsed)}
+                          className="p-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-retro-700 transition-colors cursor-pointer select-none w-full text-left"
+                        >
+                          {logsCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                          <Terminal size={14} className="inline ml-2 mr-2" />
+                          Operation Logs
+                        </button>
+
+                        {!logsCollapsed && (
+                          <div className="flex-1 overflow-auto font-mono text-xs text-green-600 dark:text-green-400 space-y-1 bg-black/5 dark:bg-black/20 mx-2 mb-2 rounded p-2">
+                            {logs.length === 0 && <span className="text-gray-500 dark:text-gray-600">Ready...</span>}
+                            {logs.map((log, i) => (
+                              <div key={i} className="break-all border-b border-gray-200 dark:border-gray-800/50 pb-1 mb-1 last:border-0 transition-colors duration-200">
+                                {log}
+                              </div>
+                            ))}
+                            <div id="log-end" />
                           </div>
-                        ))}
-                        <div id="log-end" />
+                        )}
                       </div>
                     </div>
-                  </div>
 
+                  </div>
                 </div>
               </div>
             </>

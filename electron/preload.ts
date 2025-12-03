@@ -13,4 +13,6 @@ contextBridge.exposeInMainWorld('electron', {
   findDuplicates: (systems: any[]) => ipcRenderer.invoke('find-duplicates', systems),
   deleteFiles: (filePaths: string[]) => ipcRenderer.invoke('delete-files', filePaths),
   checkBios: (basePath: string) => ipcRenderer.invoke('check-bios', basePath),
+  testScraperConnection: () => ipcRenderer.invoke('test-scraper-connection'),
+  openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
 });

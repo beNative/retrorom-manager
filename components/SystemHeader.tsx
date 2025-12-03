@@ -1,6 +1,6 @@
 import React from 'react';
 import { System, FixActionType } from '../types';
-import { RefreshCw, Link, Trash2, ShieldCheck } from 'lucide-react';
+import { RefreshCw, Link, Trash2, ShieldCheck, DownloadCloud } from 'lucide-react';
 
 interface SystemHeaderProps {
   system: System;
@@ -35,6 +35,12 @@ export const SystemHeader: React.FC<SystemHeaderProps> = ({ system, onFix, loadi
             icon={Trash2}
             label="Clean Media"
             onClick={() => onFix('CLEAN_MEDIA', true)}
+            disabled={loading}
+          />
+          <ActionButton
+            icon={DownloadCloud}
+            label="Scrape Missing"
+            onClick={() => onFix('SCRAPE_MISSING', false)}
             disabled={loading}
           />
         </div>

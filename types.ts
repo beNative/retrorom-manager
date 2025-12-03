@@ -79,7 +79,7 @@ export const CHANNELS = {
   FIX_ISSUES: 'fix-issues', // Placeholder for fix logic
 };
 
-export type FixActionType = 'SYNC_GAMELIST' | 'LINK_MEDIA' | 'CLEAN_MEDIA';
+export type FixActionType = 'SYNC_GAMELIST' | 'LINK_MEDIA' | 'CLEAN_MEDIA' | 'SCRAPE_MISSING';
 
 export interface FixRequest {
   systemId: string;
@@ -116,4 +116,13 @@ export interface BiosResult {
   definition: BiosDefinition;
   found: boolean;
   path?: string;
+}
+
+export interface AppSettings {
+  lastOpenedPath?: string;
+  dryRunMode?: boolean;
+  screenScraperUser?: string;
+  screenScraperPass?: string;
+  screenScraperDevId?: string;
+  screenScraperDevPass?: string;
 }

@@ -6,6 +6,7 @@ import { FixService } from './services/fixService';
 import { SettingsService } from './services/settingsService';
 import { DuplicateService } from './services/duplicateService';
 import { BiosService } from './services/biosService';
+import { ScraperService } from './services/scraperService';
 
 let mainWindow: BrowserWindow | null = null;
 let globalBasePath = '';
@@ -92,6 +93,28 @@ ipcMain.handle('fix-issues', async (_, args) => {
     return { logs: ['Error: No base path set.'], success: false };
   }
 
+  if (action === 'SCRAPE_MISSING') {
+    const scanner = new ScanService(globalBasePath);
+    const scanResult = await scanner.scanAll();
+    const system = scanResult.systems.find(s => s.id === systemId);
+
+    if (!system) {
+      return { logs: [`System ${systemId} not found.`], success: false };
+    }
+
+    const scraper = new ScraperService(settingsService);
+    const result = await scraper.scrapeMissing(system.path, system.games);
+
+    if (result.updated > 0) {
+      // Auto-link the new media
+      const fixService = new FixService(globalBasePath);
+      await fixService.performAction(systemId, 'LINK_MEDIA', false); // Live run to update XML
+      result.logs.push("Automatically linked new media to gamelist.xml");
+    }
+
+    return { logs: result.logs, success: result.updated > 0 };
+  }
+
   const fixService = new FixService(globalBasePath);
   return await fixService.performAction(systemId, action, dryRun);
 });
@@ -173,4 +196,13 @@ ipcMain.handle('delete-files', async (_, filePaths: string[]) => {
 ipcMain.handle('check-bios', async (_, basePath: string) => {
   const biosService = new BiosService();
   return biosService.checkBios(basePath);
+});
+
+ipcMain.handle('test-scraper-connection', async () => {
+  const scraper = new ScraperService(settingsService);
+  return await scraper.testConnection();
+});
+
+ipcMain.handle('open-external', async (_, url: string) => {
+  await import('electron').then(({ shell }) => shell.openExternal(url));
 });

@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { app } from 'electron';
 
-interface AppSettings {
-    lastOpenedPath?: string;
-}
+import { AppSettings } from '../../types';
+
+// interface AppSettings removed as it is imported
 
 export class SettingsService {
     private settingsPath: string;
