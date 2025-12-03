@@ -1,20 +1,19 @@
 import React from 'react';
-import { Settings } from 'lucide-react';
+import { Settings, FolderOpen } from 'lucide-react';
 
 interface SettingsTabProps {
     dryRunMode: boolean;
     setDryRunMode: (enabled: boolean) => void;
+    currentPath: string | null;
+    onSelectFolder: () => void;
 }
 
-export const SettingsTab: React.FC<SettingsTabProps> = ({ dryRunMode, setDryRunMode }) => {
+export const SettingsTab: React.FC<SettingsTabProps> = ({ dryRunMode, setDryRunMode, currentPath, onSelectFolder }) => {
 
     const handleDryRunChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.checked;
         setDryRunMode(newValue);
         // Persist setting
-        // We need to expose a saveSetting method in electron/preload.ts and main.ts
-        // For now, we'll assume it exists or use a generic 'set-setting' IPC if available.
-        // Based on previous steps, we only had 'get-settings'. We need to add 'set-setting'.
         if ((window as any).electron && (window as any).electron.saveSetting) {
             await (window as any).electron.saveSetting('dryRunMode', newValue);
         }
@@ -30,6 +29,25 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ dryRunMode, setDryRunM
             </div>
 
             <div className="space-y-6 max-w-2xl">
+
+                {/* ROMs Location Setting */}
+                <div className="bg-white dark:bg-retro-800 p-6 rounded-lg border border-gray-200 dark:border-retro-700 shadow-sm dark:shadow-none transition-colors duration-200">
+                    <div className="flex items-center justify-between">
+                        <div className="flex-1 mr-4">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white transition-colors duration-200">ROMs Location</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-200 break-all">
+                                {currentPath || "No folder selected"}
+                            </p>
+                        </div>
+                        <button
+                            onClick={onSelectFolder}
+                            className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-retro-700 hover:bg-gray-300 dark:hover:bg-retro-600 rounded-lg text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+                        >
+                            <FolderOpen size={16} />
+                            Change Folder
+                        </button>
+                    </div>
+                </div>
 
                 {/* Dry Run Setting */}
                 <div className="bg-white dark:bg-retro-800 p-6 rounded-lg border border-gray-200 dark:border-retro-700 shadow-sm dark:shadow-none transition-colors duration-200">
@@ -52,8 +70,6 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ dryRunMode, setDryRunM
                         </label>
                     </div>
                 </div>
-
-                {/* Future settings can go here */}
 
             </div>
         </div>

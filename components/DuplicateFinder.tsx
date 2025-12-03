@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { System } from '../types';
 import { Trash2, Check, RefreshCw, AlertTriangle } from 'lucide-react';
+import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 
 interface DuplicateFinderProps {
     systems: System[];
@@ -77,6 +78,21 @@ export const DuplicateFinder: React.FC<DuplicateFinderProps> = ({ systems }) => 
 
     const hasResults = Object.keys(duplicates).length > 0;
 
+    // Flatten files for keyboard navigation
+    const allFiles = useMemo(() => {
+        return Object.values(duplicates).flatMap(groups =>
+            groups.flatMap(group => group.files)
+        );
+    }, [duplicates]);
+
+    const { handleKeyDown, setRef } = useKeyboardNavigation<HTMLInputElement>(
+        allFiles.length,
+        (index) => toggleSelection(allFiles[index].path),
+        { loop: false }
+    );
+
+    let globalIndex = 0;
+
     return (
         <div className="flex flex-col h-full p-6 bg-gray-50 dark:bg-retro-900 text-gray-900 dark:text-gray-100">
             <div className="flex justify-between items-center mb-6">
@@ -134,25 +150,30 @@ export const DuplicateFinder: React.FC<DuplicateFinderProps> = ({ systems }) => 
                                         </button>
                                     </div>
                                     <div className="space-y-2">
-                                        {group.files.map((file) => (
-                                            <label
-                                                key={file.path}
-                                                className={`flex items-center gap-3 p-2 rounded cursor-pointer transition-colors ${selectedToDelete.has(file.path)
+                                        {group.files.map((file) => {
+                                            const currentIndex = globalIndex++;
+                                            return (
+                                                <label
+                                                    key={file.path}
+                                                    className={`flex items-center gap-3 p-2 rounded cursor-pointer transition-colors ${selectedToDelete.has(file.path)
                                                         ? 'bg-red-50 dark:bg-red-900/20'
                                                         : 'hover:bg-gray-50 dark:hover:bg-retro-700'
-                                                    }`}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedToDelete.has(file.path)}
-                                                    onChange={() => toggleSelection(file.path)}
-                                                    className="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
-                                                />
-                                                <span className={`flex-1 font-mono text-sm ${selectedToDelete.has(file.path) ? 'text-red-600 dark:text-red-400 line-through' : ''}`}>
-                                                    {file.filename}
-                                                </span>
-                                            </label>
-                                        ))}
+                                                        }`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        ref={setRef(currentIndex)}
+                                                        checked={selectedToDelete.has(file.path)}
+                                                        onChange={() => toggleSelection(file.path)}
+                                                        onKeyDown={(e) => handleKeyDown(e, currentIndex)}
+                                                        className="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
+                                                    />
+                                                    <span className={`flex-1 font-mono text-sm ${selectedToDelete.has(file.path) ? 'text-red-600 dark:text-red-400 line-through' : ''}`}>
+                                                        {file.filename}
+                                                    </span>
+                                                </label>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             ))}

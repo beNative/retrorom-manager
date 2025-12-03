@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { System } from '../types';
 import { Gamepad2, AlertTriangle, CheckCircle2, Info, Settings, Copy, Cpu } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Tooltip } from './Tooltip';
+import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 
 interface SidebarProps {
   systems: System[];
@@ -16,32 +17,11 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect, onInfoClick, onSettingsClick, onDuplicatesClick, onBiosClick, activeView }) => {
-  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
-  useEffect(() => {
-    itemRefs.current = itemRefs.current.slice(0, systems.length);
-  }, [systems]);
-
-  const handleKeyDown = (e: React.KeyboardEvent, index: number, id: string) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const nextIndex = (index + 1) % systems.length;
-      itemRefs.current[nextIndex]?.focus();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const prevIndex = (index - 1 + systems.length) % systems.length;
-      itemRefs.current[prevIndex]?.focus();
-    } else if (e.key === 'Home') {
-      e.preventDefault();
-      itemRefs.current[0]?.focus();
-    } else if (e.key === 'End') {
-      e.preventDefault();
-      itemRefs.current[systems.length - 1]?.focus();
-    } else if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onSelect(id);
-    }
-  };
+  const { handleKeyDown, setRef } = useKeyboardNavigation<HTMLButtonElement>(
+    systems.length,
+    (index) => onSelect(systems[index].id),
+    { loop: true }
+  );
 
   return (
     <div className="w-64 flex flex-col flex-shrink-0 border-r transition-colors duration-200 bg-white border-gray-200 dark:bg-retro-800 dark:border-retro-700">
@@ -57,9 +37,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
           return (
             <button
               key={sys.id}
-              ref={el => itemRefs.current[index] = el}
+              ref={setRef(index)}
               onClick={() => onSelect(sys.id)}
-              onKeyDown={(e) => handleKeyDown(e, index, sys.id)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
               className={clsx(
                 "w-full text-left p-3 border-b transition-colors flex justify-between items-center group focus:outline-none focus:ring-1 focus:ring-inset",
                 "border-gray-100 hover:bg-gray-100 focus:bg-gray-100 focus:ring-retro-accent",

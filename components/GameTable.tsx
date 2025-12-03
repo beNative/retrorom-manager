@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { GameEntry } from '../types';
 import { Image, Film, AlertCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Tooltip } from './Tooltip';
+import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 
 interface GameTableProps {
   games: GameEntry[];
@@ -11,40 +12,11 @@ interface GameTableProps {
 }
 
 export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelect }) => {
-  const rowRefs = useRef<(HTMLTableRowElement | null)[]>([]);
-
-  useEffect(() => {
-    rowRefs.current = rowRefs.current.slice(0, games.length);
-  }, [games]);
-
-  const handleKeyDown = (e: React.KeyboardEvent, index: number, id: string) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const nextIndex = Math.min(index + 1, games.length - 1);
-      rowRefs.current[nextIndex]?.focus();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const prevIndex = Math.max(index - 1, 0);
-      rowRefs.current[prevIndex]?.focus();
-    } else if (e.key === 'Home') {
-      e.preventDefault();
-      rowRefs.current[0]?.focus();
-    } else if (e.key === 'End') {
-      e.preventDefault();
-      rowRefs.current[games.length - 1]?.focus();
-    } else if (e.key === 'PageDown') {
-      e.preventDefault();
-      const nextIndex = Math.min(index + 10, games.length - 1);
-      rowRefs.current[nextIndex]?.focus();
-    } else if (e.key === 'PageUp') {
-      e.preventDefault();
-      const prevIndex = Math.max(index - 10, 0);
-      rowRefs.current[prevIndex]?.focus();
-    } else if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onSelect(id);
-    }
-  };
+  const { handleKeyDown, setRef } = useKeyboardNavigation<HTMLTableRowElement>(
+    games.length,
+    (index) => onSelect(games[index].id),
+    { loop: false, pageStep: 10 }
+  );
 
   return (
     <div className="flex-1 overflow-auto">
@@ -60,10 +32,10 @@ export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelec
           {games.map((game, index) => (
             <tr
               key={game.id}
-              ref={el => rowRefs.current[index] = el}
+              ref={setRef(index)}
               tabIndex={0}
               onClick={() => onSelect(game.id)}
-              onKeyDown={(e) => handleKeyDown(e, index, game.id)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
               className={clsx(
                 "border-b border-gray-200 dark:border-retro-700/50 last:border-0 group cursor-pointer outline-none transition-colors",
                 selectedId === game.id

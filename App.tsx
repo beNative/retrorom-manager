@@ -152,6 +152,8 @@ const App: React.FC = () => {
             <SettingsTab
               dryRunMode={dryRunMode}
               setDryRunMode={setDryRunMode}
+              currentPath={basePath}
+              onSelectFolder={handleSelectFolder}
             />
           ) : activeView === 'duplicates' ? (
             <DuplicateFinder systems={systems} />
@@ -165,8 +167,8 @@ const App: React.FC = () => {
                 loading={loading}
               />
 
-              <div className="flex-1 overflow-auto p-4">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
+              <div className="flex-1 overflow-auto lg:overflow-hidden p-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-[auto_1fr] gap-4 h-auto lg:h-full">
 
                   {/* Dashboard / Stats */}
                   <div className="lg:col-span-3">
