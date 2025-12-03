@@ -20,7 +20,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ systems, selectedId, onSelect,
   const { handleKeyDown, setRef } = useKeyboardNavigation<HTMLButtonElement>(
     systems.length,
     (index) => onSelect(systems[index].id),
-    { loop: true }
+    { loop: true, selectOnFocus: true }
   );
 
   return (

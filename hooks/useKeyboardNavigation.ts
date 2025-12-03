@@ -4,6 +4,7 @@ interface UseKeyboardNavigationOptions {
     loop?: boolean;
     pageStep?: number;
     orientation?: 'vertical' | 'horizontal';
+    selectOnFocus?: boolean;
 }
 
 export const useKeyboardNavigation = <T extends HTMLElement>(
@@ -11,7 +12,7 @@ export const useKeyboardNavigation = <T extends HTMLElement>(
     onSelect?: (index: number) => void,
     options: UseKeyboardNavigationOptions = {}
 ) => {
-    const { loop = false, pageStep = 10, orientation = 'vertical' } = options;
+    const { loop = false, pageStep = 10, orientation = 'vertical', selectOnFocus = false } = options;
     const itemRefs = useRef<(T | null)[]>([]);
 
     useEffect(() => {
@@ -56,10 +57,15 @@ export const useKeyboardNavigation = <T extends HTMLElement>(
             onSelect?.(index);
         }
 
-        if (nextIndex !== null && itemRefs.current[nextIndex]) {
-            itemRefs.current[nextIndex]?.focus();
+        if (nextIndex !== null) {
+            if (itemRefs.current[nextIndex]) {
+                itemRefs.current[nextIndex]?.focus();
+            }
+            if (selectOnFocus) {
+                onSelect?.(nextIndex);
+            }
         }
-    }, [itemCount, onSelect, loop, pageStep, orientation]);
+    }, [itemCount, onSelect, loop, pageStep, orientation, selectOnFocus]);
 
     const setRef = (index: number) => (el: T | null) => {
         itemRefs.current[index] = el;

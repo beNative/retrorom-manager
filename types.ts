@@ -20,6 +20,7 @@ export interface GameEntry {
   image?: string;
   video?: string;
   marquee?: string;
+  manual?: string;
   developer?: string;
   publisher?: string;
   releaseDate?: string;
@@ -35,6 +36,14 @@ export interface GameEntry {
   imageExists: boolean;
   videoExists: boolean;
   marqueeExists: boolean;
+  manualExists: boolean;
+
+  // Resolved Paths (for visualization)
+  imagePath?: string;
+  videoPath?: string;
+  marqueePath?: string;
+  manualPath?: string;
+
   inGamelist: boolean; // True if found in XML
   isDuplicate: boolean;
 }

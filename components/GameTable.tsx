@@ -1,6 +1,6 @@
 import React from 'react';
 import { GameEntry } from '../types';
-import { Image, Film, AlertCircle } from 'lucide-react';
+import { Image, Film, AlertCircle, Book } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Tooltip } from './Tooltip';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
@@ -9,13 +9,14 @@ interface GameTableProps {
   games: GameEntry[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onViewMedia: (url: string, type: 'image' | 'video' | 'manual', title: string) => void;
 }
 
-export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelect }) => {
+export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelect, onViewMedia }) => {
   const { handleKeyDown, setRef } = useKeyboardNavigation<HTMLTableRowElement>(
     games.length,
     (index) => onSelect(games[index].id),
-    { loop: false, pageStep: 10 }
+    { loop: false, pageStep: 10, selectOnFocus: true }
   );
 
   return (
@@ -53,18 +54,54 @@ export const GameTable: React.FC<GameTableProps> = ({ games, selectedId, onSelec
                 </div>
               </td>
               <td className="p-3">
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <Tooltip content={game.image ? `Path: ${game.image}` : "No Image"}>
-                    <Image
-                      size={16}
-                      className={clsx(game.imageExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
-                    />
+                    <button
+                      onClick={() => game.imagePath && onViewMedia(game.imagePath, 'image', `Image: ${game.name}`)}
+                      disabled={!game.imageExists}
+                      className={clsx("p-1 rounded hover:bg-gray-200 dark:hover:bg-retro-600 transition-colors", !game.imageExists && "cursor-default opacity-50")}
+                    >
+                      <Image
+                        size={16}
+                        className={clsx(game.imageExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
+                      />
+                    </button>
                   </Tooltip>
                   <Tooltip content={game.video ? `Path: ${game.video}` : "No Video"}>
-                    <Film
-                      size={16}
-                      className={clsx(game.videoExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
-                    />
+                    <button
+                      onClick={() => game.videoPath && onViewMedia(game.videoPath, 'video', `Video: ${game.name}`)}
+                      disabled={!game.videoExists}
+                      className={clsx("p-1 rounded hover:bg-gray-200 dark:hover:bg-retro-600 transition-colors", !game.videoExists && "cursor-default opacity-50")}
+                    >
+                      <Film
+                        size={16}
+                        className={clsx(game.videoExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
+                      />
+                    </button>
+                  </Tooltip>
+                  <Tooltip content={game.marquee ? `Marquee: ${game.marquee}` : "No Marquee"}>
+                    <button
+                      onClick={() => game.marqueePath && onViewMedia(game.marqueePath, 'image', `Marquee: ${game.name}`)}
+                      disabled={!game.marqueeExists}
+                      className={clsx("p-1 rounded hover:bg-gray-200 dark:hover:bg-retro-600 transition-colors", !game.marqueeExists && "cursor-default opacity-50")}
+                    >
+                      <Image
+                        size={16}
+                        className={clsx(game.marqueeExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
+                      />
+                    </button>
+                  </Tooltip>
+                  <Tooltip content={game.manual ? `Manual: ${game.manual}` : "No Manual"}>
+                    <button
+                      onClick={() => game.manualPath && onViewMedia(game.manualPath, 'manual', `Manual: ${game.name}`)}
+                      disabled={!game.manualExists}
+                      className={clsx("p-1 rounded hover:bg-gray-200 dark:hover:bg-retro-600 transition-colors", !game.manualExists && "cursor-default opacity-50")}
+                    >
+                      <Book
+                        size={16}
+                        className={clsx(game.manualExists ? "text-retro-success" : "text-gray-300 dark:text-retro-700")}
+                      />
+                    </button>
                   </Tooltip>
                 </div>
               </td>

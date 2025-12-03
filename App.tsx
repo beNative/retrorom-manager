@@ -10,6 +10,8 @@ import { InfoTab } from './components/InfoTab';
 import { SettingsTab } from './components/SettingsTab';
 import { DuplicateFinder } from './components/DuplicateFinder';
 import { BiosChecker } from './components/BiosChecker';
+import { MediaViewer } from './components/MediaViewer';
+import { MediaPanel } from './components/MediaPanel';
 import { FolderOpen, Terminal } from 'lucide-react';
 
 // Mock Electron Bridge for type safety if window.electron is missing (dev mode in browser)
@@ -34,6 +36,12 @@ const App: React.FC = () => {
   const [logs, setLogs] = useState<string[]>([]);
   const [activeView, setActiveView] = useState<'dashboard' | 'info' | 'settings' | 'duplicates' | 'bios'>('dashboard');
   const [dryRunMode, setDryRunMode] = useState(true);
+  const [mediaViewer, setMediaViewer] = useState<{ isOpen: boolean; url: string; type: 'image' | 'video' | 'manual' | 'unknown'; title: string }>({
+    isOpen: false,
+    url: '',
+    type: 'unknown',
+    title: ''
+  });
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -97,6 +105,10 @@ const App: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewMedia = (url: string, type: 'image' | 'video' | 'manual', title: string) => {
+    setMediaViewer({ isOpen: true, url, type, title });
   };
 
   const selectedSystem = systems.find(s => s.id === selectedSystemId);
@@ -181,22 +193,32 @@ const App: React.FC = () => {
                       games={selectedSystem.games}
                       selectedId={selectedGameId}
                       onSelect={setSelectedGameId}
+                      onViewMedia={handleViewMedia}
                     />
                   </div>
 
-                  {/* Logs / Console - Seamless Layout */}
-                  <div className="lg:col-span-1 flex flex-col h-full min-h-0 pl-2 overflow-hidden">
-                    <div className="p-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-retro-700 mb-2 flex-shrink-0 transition-colors duration-200">
-                      <Terminal size={14} /> Operation Logs
+                  {/* Right Column: Media Panel + Logs */}
+                  <div className="lg:col-span-1 flex flex-col h-full min-h-0 pl-2 gap-4 overflow-hidden">
+
+                    {/* Media Panel */}
+                    <div className="flex-1 min-h-[300px] flex flex-col">
+                      <MediaPanel game={selectedSystem.games.find(g => g.id === selectedGameId) || null} />
                     </div>
-                    <div className="flex-1 overflow-auto font-mono text-xs text-green-600 dark:text-green-400 space-y-1">
-                      {logs.length === 0 && <span className="text-gray-500 dark:text-gray-600">Ready...</span>}
-                      {logs.map((log, i) => (
-                        <div key={i} className="break-all border-b border-gray-200 dark:border-gray-800/50 pb-1 mb-1 last:border-0 transition-colors duration-200">
-                          {log}
-                        </div>
-                      ))}
-                      <div id="log-end" />
+
+                    {/* Logs / Console */}
+                    <div className="h-1/3 flex flex-col overflow-hidden border-t border-gray-200 dark:border-retro-700 pt-2">
+                      <div className="p-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-2 flex-shrink-0 transition-colors duration-200">
+                        <Terminal size={14} /> Operation Logs
+                      </div>
+                      <div className="flex-1 overflow-auto font-mono text-xs text-green-600 dark:text-green-400 space-y-1 bg-black/5 dark:bg-black/20 rounded p-2">
+                        {logs.length === 0 && <span className="text-gray-500 dark:text-gray-600">Ready...</span>}
+                        {logs.map((log, i) => (
+                          <div key={i} className="break-all border-b border-gray-200 dark:border-gray-800/50 pb-1 mb-1 last:border-0 transition-colors duration-200">
+                            {log}
+                          </div>
+                        ))}
+                        <div id="log-end" />
+                      </div>
                     </div>
                   </div>
 
@@ -211,6 +233,14 @@ const App: React.FC = () => {
         </div>
       </div>
       <StatusBar />
+
+      <MediaViewer
+        isOpen={mediaViewer.isOpen}
+        onClose={() => setMediaViewer(prev => ({ ...prev, isOpen: false }))}
+        url={mediaViewer.url}
+        type={mediaViewer.type}
+        title={mediaViewer.title}
+      />
     </div>
   );
 };
