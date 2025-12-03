@@ -90,114 +90,194 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ dryRunMode, setDryRunM
                     </div>
                 </div>
 
-                {/* ScreenScraper Credentials */}
+                {/* Scraper Selection */}
                 <div className="bg-white dark:bg-retro-800 p-6 rounded-lg border border-gray-200 dark:border-retro-700 shadow-sm dark:shadow-none transition-colors duration-200">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">ScreenScraper Credentials</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
-                            <input
-                                type="text"
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
-                                placeholder="Username"
-                                value={settings.screenScraperUser || ''}
-                                onChange={(e) => handleSettingChange('screenScraperUser', e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                            <input
-                                type="password"
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
-                                placeholder="Password"
-                                value={settings.screenScraperPass || ''}
-                                onChange={(e) => handleSettingChange('screenScraperPass', e.target.value)}
-                            />
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            Credentials are saved automatically. A free account is required to use the API.
-                        </p>
-                        <div className="mt-2">
-                            <button
-                                onClick={async () => {
-                                    if ((window as any).electron && (window as any).electron.testScraperConnection) {
-                                        const btn = document.getElementById('test-conn-btn');
-                                        const status = document.getElementById('test-conn-status');
-                                        if (btn) btn.setAttribute('disabled', 'true');
-                                        if (status) status.textContent = 'Testing...';
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Scraping Service</h3>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Active Scraper</label>
+                        <select
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
+                            value={settings.activeScraper || 'screenscraper'}
+                            onChange={(e) => handleSettingChange('activeScraper', e.target.value)}
+                        >
+                            <option value="screenscraper">ScreenScraper.fr (Best Metadata)</option>
+                            <option value="thegamesdb">TheGamesDB (Free)</option>
+                            <option value="mobygames">MobyGames (Non-Commercial)</option>
+                        </select>
+                    </div>
+                </div>
 
-                                        try {
-                                            const result = await (window as any).electron.testScraperConnection();
-                                            if (status) {
-                                                status.textContent = result.message;
-                                                status.className = result.success ? "text-sm text-green-600 dark:text-green-400 font-medium" : "text-sm text-red-600 dark:text-red-400 font-medium";
+                {/* ScreenScraper Settings */}
+                {(!settings.activeScraper || settings.activeScraper === 'screenscraper') && (
+                    <>
+                        <div className="bg-white dark:bg-retro-800 p-6 rounded-lg border border-gray-200 dark:border-retro-700 shadow-sm dark:shadow-none transition-colors duration-200">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">ScreenScraper Credentials</h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
+                                        placeholder="Username"
+                                        value={settings.screenScraperUser || ''}
+                                        onChange={(e) => handleSettingChange('screenScraperUser', e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                                    <input
+                                        type="password"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
+                                        placeholder="Password"
+                                        value={settings.screenScraperPass || ''}
+                                        onChange={(e) => handleSettingChange('screenScraperPass', e.target.value)}
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    Credentials are saved automatically. A free account is required to use the API.
+                                </p>
+                                <div className="mt-2">
+                                    <button
+                                        onClick={async () => {
+                                            if ((window as any).electron && (window as any).electron.testScraperConnection) {
+                                                const btn = document.getElementById('test-conn-btn');
+                                                const status = document.getElementById('test-conn-status');
+                                                if (btn) btn.setAttribute('disabled', 'true');
+                                                if (status) status.textContent = 'Testing...';
+
+                                                try {
+                                                    const result = await (window as any).electron.testScraperConnection();
+                                                    if (status) {
+                                                        status.textContent = result.message;
+                                                        status.className = result.success ? "text-sm text-green-600 dark:text-green-400 font-medium" : "text-sm text-red-600 dark:text-red-400 font-medium";
+                                                    }
+                                                } catch (e) {
+                                                    if (status) {
+                                                        status.textContent = "Error invoking test";
+                                                        status.className = "text-sm text-red-600 dark:text-red-400 font-medium";
+                                                    }
+                                                } finally {
+                                                    if (btn) btn.removeAttribute('disabled');
+                                                }
                                             }
-                                        } catch (e) {
-                                            if (status) {
-                                                status.textContent = "Error invoking test";
-                                                status.className = "text-sm text-red-600 dark:text-red-400 font-medium";
+                                        }}
+                                        id="test-conn-btn"
+                                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Test Connection
+                                    </button>
+                                    <span id="test-conn-status" className="ml-3 text-sm"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-retro-800 p-6 rounded-lg border border-gray-200 dark:border-retro-700 shadow-sm dark:shadow-none transition-colors duration-200">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Developer Credentials (Required)</h3>
+                            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded text-sm">
+                                <p className="mb-2">
+                                    <strong>Important:</strong> A valid Developer ID and Password are required to use the ScreenScraper API.
+                                    These are <strong>different</strong> from your regular login.
+                                </p>
+                                <p>
+                                    You must request a Developer Key (DevID) from the ScreenScraper team.
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if ((window as any).electron && (window as any).electron.openExternal) {
+                                                (window as any).electron.openExternal("https://screenscraper.fr/");
                                             }
-                                        } finally {
-                                            if (btn) btn.removeAttribute('disabled');
+                                        }}
+                                        className="ml-1 underline hover:text-blue-800 dark:hover:text-blue-200 bg-transparent border-none p-0 cursor-pointer inline"
+                                    >
+                                        Visit ScreenScraper.fr
+                                    </button>
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Developer ID (devid)</label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
+                                        placeholder="Enter your Developer ID"
+                                        value={settings.screenScraperDevId || ''}
+                                        onChange={(e) => handleSettingChange('screenScraperDevId', e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Developer Password (devpassword)</label>
+                                    <input
+                                        type="password"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
+                                        placeholder="Enter your Developer Password"
+                                        value={settings.screenScraperDevPass || ''}
+                                        onChange={(e) => handleSettingChange('screenScraperDevPass', e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* TheGamesDB Settings */}
+                {settings.activeScraper === 'thegamesdb' && (
+                    <div className="bg-white dark:bg-retro-800 p-6 rounded-lg border border-gray-200 dark:border-retro-700 shadow-sm dark:shadow-none transition-colors duration-200">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">TheGamesDB Settings</h3>
+                        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded text-sm">
+                            <p>
+                                Get an API Key from <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if ((window as any).electron && (window as any).electron.openExternal) {
+                                            (window as any).electron.openExternal("https://thegamesdb.net/");
                                         }
-                                    }
-                                }}
-                                id="test-conn-btn"
-                                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Test Connection
-                            </button>
-                            <span id="test-conn-status" className="ml-3 text-sm"></span>
+                                    }}
+                                    className="underline hover:text-blue-800 dark:hover:text-blue-200 bg-transparent border-none p-0 cursor-pointer inline"
+                                >TheGamesDB.net</button>.
+                            </p>
                         </div>
-                    </div>
-                </div>
-
-                {/* Developer Credentials */}
-                <div className="bg-white dark:bg-retro-800 p-6 rounded-lg border border-gray-200 dark:border-retro-700 shadow-sm dark:shadow-none transition-colors duration-200">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">Developer Credentials (Required)</h3>
-                    <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded text-sm">
-                        <p className="mb-2">
-                            <strong>Important:</strong> A valid Developer ID and Password are required to use the ScreenScraper API.
-                            These are <strong>different</strong> from your regular login.
-                        </p>
-                        <p>
-                            You must request a Developer Key (DevID) from the ScreenScraper team.
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    if ((window as any).electron && (window as any).electron.openExternal) {
-                                        (window as any).electron.openExternal("https://screenscraper.fr/");
-                                    }
-                                }}
-                                className="ml-1 underline hover:text-blue-800 dark:hover:text-blue-200 bg-transparent border-none p-0 cursor-pointer inline"
-                            >
-                                Visit ScreenScraper.fr
-                            </button>
-                        </p>
-                    </div>
-                    <div className="grid grid-cols-1 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Developer ID (devid)</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">API Key</label>
                             <input
                                 type="text"
                                 className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
-                                placeholder="Enter your Developer ID"
-                                value={settings.screenScraperDevId || ''}
-                                onChange={(e) => handleSettingChange('screenScraperDevId', e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Developer Password (devpassword)</label>
-                            <input
-                                type="password"
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
-                                placeholder="Enter your Developer Password"
-                                value={settings.screenScraperDevPass || ''}
-                                onChange={(e) => handleSettingChange('screenScraperDevPass', e.target.value)}
+                                placeholder="Enter your TheGamesDB API Key"
+                                value={settings.theGamesDbApiKey || ''}
+                                onChange={(e) => handleSettingChange('theGamesDbApiKey', e.target.value)}
                             />
                         </div>
                     </div>
-                </div>
+                )}
+
+                {/* MobyGames Settings */}
+                {settings.activeScraper === 'mobygames' && (
+                    <div className="bg-white dark:bg-retro-800 p-6 rounded-lg border border-gray-200 dark:border-retro-700 shadow-sm dark:shadow-none transition-colors duration-200">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-200">MobyGames Settings</h3>
+                        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded text-sm">
+                            <p>
+                                Get an API Key from <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if ((window as any).electron && (window as any).electron.openExternal) {
+                                            (window as any).electron.openExternal("https://www.mobygames.com/info/api");
+                                        }
+                                    }}
+                                    className="underline hover:text-blue-800 dark:hover:text-blue-200 bg-transparent border-none p-0 cursor-pointer inline"
+                                >MobyGames.com</button>.
+                            </p>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">API Key</label>
+                            <input
+                                type="text"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-retro-600 rounded-md bg-white dark:bg-retro-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-retro-accent"
+                                placeholder="Enter your MobyGames API Key"
+                                value={settings.mobyGamesApiKey || ''}
+                                onChange={(e) => handleSettingChange('mobyGamesApiKey', e.target.value)}
+                            />
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>
