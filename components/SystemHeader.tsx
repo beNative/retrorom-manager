@@ -46,8 +46,7 @@ export const SystemHeader: React.FC<SystemHeaderProps> = ({ system, onFix, loadi
         </div>
         <div className="text-xs text-gray-500 flex items-center gap-1">
           <ShieldCheck size={12} />
-          Actions default to <span className="text-retro-accent font-bold">Dry-Run</span> mode.
-          (Actual write mode not fully exposed in UI for safety demo)
+          <span className="text-retro-accent font-bold">Sync XML</span>, <span className="text-retro-accent font-bold">Link Media</span>, and <span className="text-retro-accent font-bold">Clean Media</span> run in Dry-Run mode (preview only). <span className="text-retro-accent font-bold">Scrape Missing</span> writes directly.
         </div>
       </div>
     </div>

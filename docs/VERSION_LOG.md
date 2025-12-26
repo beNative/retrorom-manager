@@ -5,6 +5,9 @@
 - Added `.rvz` file extension support for GameCube ROMs in scanner and fix services.
 - Link Media now creates a new `gamelist.xml` from ROMs if one doesn't exist.
 
+### Improved
+- Clarified dry-run mode indicator to show which actions use preview vs. write mode.
+
 ---
 
 ## [1.0.0] - 2025-11-29
