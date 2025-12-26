@@ -177,8 +177,12 @@ export class FixService {
         }
 
         if (updates > 0 && !dryRun) {
-            const backupPath = `${gamelistPath}.bak-${Date.now()}`;
-            await fs.promises.copyFile(gamelistPath, backupPath);
+            // Only backup if file already exists
+            if (fs.existsSync(gamelistPath)) {
+                const backupPath = `${gamelistPath}.bak-${Date.now()}`;
+                await fs.promises.copyFile(gamelistPath, backupPath);
+                logs.push(`Backup created: ${path.basename(backupPath)}`);
+            }
             const newXml = builder.build(xmlData);
             await fs.promises.writeFile(gamelistPath, newXml, 'utf-8');
             logs.push(`Updated ${updates} media links in gamelist.xml`);
