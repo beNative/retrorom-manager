@@ -1,5 +1,11 @@
 # Version Log
 
+## [1.1.0] - 2025-12-26
+### Added
+- Added `.rvz` file extension support for GameCube ROMs in scanner and fix services.
+
+---
+
 ## [1.0.0] - 2025-11-29
 ### Added
 - Initial release.

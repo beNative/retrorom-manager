@@ -47,7 +47,7 @@ export class FixService {
 
         // 2. Scan ROMs again to be sure
         const files = await fs.promises.readdir(systemPath);
-        const roms = files.filter(f => ['.zip', '.nes', '.sfc', '.md', '.iso'].includes(path.extname(f).toLowerCase()));
+        const roms = files.filter(f => ['.zip', '.nes', '.sfc', '.md', '.iso', '.rvz'].includes(path.extname(f).toLowerCase()));
 
         // 3. Find Missing Entries
         let addedCount = 0;

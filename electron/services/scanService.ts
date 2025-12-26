@@ -200,7 +200,7 @@ export class ScanService {
 
   private isRomExtension(filePath: string) {
     const ext = path.extname(filePath).toLowerCase();
-    return ['.zip', '.7z', '.nes', '.sfc', '.smc', '.iso', '.bin', '.cue', '.gba', '.gb', '.md'].includes(ext);
+    return ['.zip', '.7z', '.nes', '.sfc', '.smc', '.iso', '.bin', '.cue', '.gba', '.gb', '.md', '.rvz'].includes(ext);
   }
 
   private isMediaExtension(filePath: string) {
