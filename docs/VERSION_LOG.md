@@ -3,6 +3,7 @@
 ## [1.1.0] - 2025-12-26
 ### Added
 - Added `.rvz` file extension support for GameCube ROMs in scanner and fix services.
+- Link Media now creates a new `gamelist.xml` from ROMs if one doesn't exist.
 
 ---
 

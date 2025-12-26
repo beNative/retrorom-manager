@@ -109,13 +109,31 @@ export class FixService {
         const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_", isArray: (name) => name === "game" });
         const builder = new XMLBuilder({ ignoreAttributes: false, attributeNamePrefix: "@_", format: true });
 
+        let xmlData: any;
+
         if (!fs.existsSync(gamelistPath)) {
-            logs.push("No gamelist found to link.");
-            return;
+            logs.push("No gamelist.xml found. Creating new gamelist from ROMs...");
+            // Scan for ROMs and create entries
+            const files = await fs.promises.readdir(systemPath);
+            const roms = files.filter(f => ['.zip', '.7z', '.nes', '.sfc', '.smc', '.iso', '.bin', '.cue', '.gba', '.gb', '.md', '.rvz'].includes(path.extname(f).toLowerCase()));
+
+            if (roms.length === 0) {
+                logs.push("No ROMs found. Nothing to create.");
+                return;
+            }
+
+            const games = roms.map(rom => ({
+                path: `./${rom}`,
+                name: path.basename(rom, path.extname(rom))
+            }));
+
+            xmlData = { gameList: { game: games } };
+            logs.push(`Created gamelist with ${roms.length} ROM entries.`);
+        } else {
+            const content = await fs.promises.readFile(gamelistPath, 'utf-8');
+            xmlData = parser.parse(content);
         }
 
-        const content = await fs.promises.readFile(gamelistPath, 'utf-8');
-        const xmlData = parser.parse(content);
         const games = xmlData.gameList.game;
         let updates = 0;
 
